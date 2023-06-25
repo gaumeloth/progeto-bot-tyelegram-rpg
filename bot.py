@@ -26,27 +26,45 @@ async def start(message: types.Message):
 async def repeat_message(message: types.Message):
     # Esempio di utilizzo di logging
     logging.info('Ricevuto comando "Ripeti messaggio"')
-    await message.reply(message.text)
+
+    # Chiedi all'utente il messaggio da ripetere
+    await message.reply("Inserisci il messaggio da ripetere:")
 
 @dp.message_handler(text='Inverti testo')
 async def reverse_text(message: types.Message):
     # Esempio di utilizzo di logging
     logging.info('Ricevuto comando "Inverti testo"')
-    reversed_text = message.text[::-1]
-    await message.reply(reversed_text)
+
+    # Chiedi all'utente il testo da invertire
+    await message.reply("Inserisci il testo da invertire:")
 
 @dp.message_handler(text='Cerca su Google')
 async def google_search(message: types.Message):
     # Esempio di utilizzo di logging
     logging.info('Ricevuto comando "Cerca su Google"')
-    query = message.text
-    results = search(query, num_results=4)
-    response = "Risultati della ricerca:\n"
-    for result in results:
-        title = result['title']
-        link = result['link']
-        response += f"\n{title}\n{link}\n"
-    await message.reply(response)
+
+    # Chiedi all'utente il termine di ricerca
+    await message.reply("Inserisci il termine di ricerca su Google:")
+
+@dp.message_handler()
+async def handle_user_reply(message: types.Message):
+    # Gestisci la risposta dell'utente in base al comando selezionato
+    if message.text == 'Ripeti messaggio':
+        await message.reply(message.text)
+    elif message.text == 'Inverti testo':
+        await message.reply(message.text[::-1])
+    elif message.text == 'Cerca su Google':
+        search_term = message.text
+        results = search(search_term, num=8, stop=8)
+
+        response = "Risultati della ricerca su Google:\n\n"
+
+        for idx, result in enumerate(results, 1):
+            response += f"{idx}. <a href='{result}'>{result}</a>\n"
+
+        await message.reply(response, parse_mode='HTML')
+
+# Aggiungi gli altri gestori dei messaggi come prima
 
 if __name__ == '__main__':
     from aiogram import executor
